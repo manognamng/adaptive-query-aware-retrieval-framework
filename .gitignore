@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+
+vector_store/*.index
+vector_store/*.pkl
+
+.env
+
+.cache/
