@@ -19,7 +19,8 @@ def predict_granularity(query):
     therapy_terms = [
         "therapy",
         "treatment",
-        "probiotic"
+        "probiotic",
+        "supplementation"
     ]
 
     if any(t in query for t in bacteria_terms):
@@ -29,6 +30,7 @@ def predict_granularity(query):
         return "section"
 
     elif any(t in query for t in therapy_terms):
-        return "section"
+        return "paragraph"
+
 
     return "paragraph"

@@ -6,7 +6,9 @@ nltk.download("punkt")
 from nltk.tokenize import sent_tokenize
 
 
-# Clean text
+# -------------------------------
+# CLEAN TEXT
+# -------------------------------
 def clean_text(text):
 
     text = re.sub(r"\s+", " ", text)
@@ -14,7 +16,9 @@ def clean_text(text):
     return text.strip()
 
 
-# Sliding window sentence chunks
+# -------------------------------
+# SENTENCE CHUNKS
+# -------------------------------
 def sliding_window_chunks(
     text,
     window_size=3,
@@ -41,27 +45,83 @@ def sliding_window_chunks(
     return chunks
 
 
-# Paragraph chunks
-def paragraph_chunks(text):
+# -------------------------------
+# PARAGRAPH CHUNKS
+# -------------------------------
+def paragraph_chunks(
+    text,
+    chunk_size=5
+):
 
-    paragraphs = text.split("\\n\\n")
+    text = clean_text(text)
 
-    cleaned = [
-        clean_text(p)
-        for p in paragraphs
-        if len(p.strip()) > 50
-    ]
+    sentences = sent_tokenize(text)
 
-    return cleaned
+    chunks = []
+
+    for i in range(
+        0,
+        len(sentences),
+        chunk_size
+    ):
+
+        chunk = " ".join(
+            sentences[i:i + chunk_size]
+        )
+
+        # Skip very short chunks
+        if len(chunk.split()) < 10:
+            continue
+
+        # Skip chunks starting with citations
+        if chunk.strip().startswith("["):
+            continue
+
+        # Skip DOI links
+        if "doi.org" in chunk.lower():
+            continue
+
+        # Skip References section
+        if "references" in chunk.lower():
+            continue
+
+        # Skip citation-heavy chunks
+        citation_count = chunk.count("[")
+
+        if citation_count > 3:
+            continue
+
+        chunks.append(chunk)
+
+    print(
+        "Filtered paragraph chunks:",
+        len(chunks)
+    )
+
+    return chunks
 
 
-# Section chunks
+# -------------------------------
+# SECTION CHUNKS
+# -------------------------------
 def section_chunks(
     text,
-    section_size=4
+    section_size=1
 ):
 
     paragraphs = paragraph_chunks(text)
+
+    print(
+        "Paragraph chunks:",
+        len(paragraphs)
+    )
+
+    if len(paragraphs) > 0:
+
+        print(
+            "First chunk length:",
+            len(paragraphs[0])
+        )
 
     sections = []
 
